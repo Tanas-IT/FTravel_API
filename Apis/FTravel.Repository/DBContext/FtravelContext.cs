@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FTravel.Repository.EntityModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace FTravel.Repository.DBContext;
 
@@ -14,6 +15,7 @@ public partial class FtravelContext : DbContext
     public FtravelContext(DbContextOptions<FtravelContext> options)
         : base(options)
     {
+
     }
 
     public virtual DbSet<BusCompany> BusCompanies { get; set; }
@@ -59,6 +61,17 @@ public partial class FtravelContext : DbContext
     public virtual DbSet<Setting> Settings { get; set; }
 
     public virtual DbSet<Otp> Otps { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var configuration = new ConfigurationBuilder()
+           .SetBasePath(Directory.GetCurrentDirectory())
+           .AddJsonFile("appsettings.json")
+           .Build();
+        var connectionString = configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+        optionsBuilder.UseSqlServer(connectionString);
+    }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
